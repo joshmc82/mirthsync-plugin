@@ -17,11 +17,13 @@
 
 package com.saga_it.mirthsync_plugin.shared.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-@AllArgsConstructor
 public class MirthSyncInfo {
     @Getter @Setter private String data;
+
+    public MirthSyncInfo(String data) {
+        this.data = data;
+    }
 }

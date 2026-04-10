@@ -20,6 +20,7 @@ package com.saga_it.mirthsync_plugin.client.panel;
 import com.saga_it.mirthsync_plugin.shared.PluginConstants;
 import com.mirth.connect.client.ui.AbstractSettingsPanel;
 import com.mirth.connect.client.ui.PlatformUI;
+import com.mirth.connect.client.ui.FrameBase;
 import com.mirth.connect.client.ui.components.MirthCheckBox;
 import com.mirth.connect.client.ui.components.MirthPasswordField;
 import com.mirth.connect.client.ui.components.MirthTextField;
@@ -446,6 +447,10 @@ public class MainSettingsPanel extends AbstractSettingsPanel {
         return panel;
     }
 
+    private FrameBase getMirthFrame() {
+        return (FrameBase) PlatformUI.MIRTH_FRAME;
+    }
+
     private void populateUserGitInfo() {
         boolean previous = updatingFromModel;
         updatingFromModel = true;
@@ -455,9 +460,9 @@ public class MainSettingsPanel extends AbstractSettingsPanel {
             }
 
             User currentUser = null;
-            if (PlatformUI.MIRTH_FRAME != null && PlatformUI.MIRTH_FRAME.mirthClient != null) {
+            if (getMirthFrame() != null && getMirthFrame().mirthClient != null) {
                 try {
-                    currentUser = PlatformUI.MIRTH_FRAME.mirthClient.getCurrentUser();
+                    currentUser = getMirthFrame().mirthClient.getCurrentUser();
                 } catch (ClientException ignored) {
                     // best effort only; fall back to existing values
                 }
@@ -1315,7 +1320,7 @@ public class MainSettingsPanel extends AbstractSettingsPanel {
 
     private Map<String, Object> invokeMirthsync(List<String> arguments) throws Exception {
         try {
-            MirthSyncApi servlet = PlatformUI.MIRTH_FRAME.mirthClient.getServlet(MirthSyncApi.class);
+            MirthSyncApi servlet = getMirthFrame().mirthClient.getServlet(MirthSyncApi.class);
             return servlet.executeMirthsync(arguments);
         } catch (ClientException e) {
             throw new Exception(e.getMessage(), e);
@@ -1377,7 +1382,7 @@ public class MainSettingsPanel extends AbstractSettingsPanel {
         }
 
         try {
-            MirthSyncApi servlet = PlatformUI.MIRTH_FRAME.mirthClient.getServlet(MirthSyncApi.class);
+            MirthSyncApi servlet = getMirthFrame().mirthClient.getServlet(MirthSyncApi.class);
             String token = servlet.getSessionToken();
             if (isBlank(token)) {
                 throw new Exception("Unable to retrieve session token; provide username and password instead.");
@@ -2027,7 +2032,7 @@ public class MainSettingsPanel extends AbstractSettingsPanel {
         updatingFromModel = true;
         Properties properties = new Properties();
         try {
-            Properties loaded = PlatformUI.MIRTH_FRAME.mirthClient.getPluginProperties(PluginConstants.PLUGIN_POINTNAME, null);
+            Properties loaded = getMirthFrame().mirthClient.getPluginProperties(PluginConstants.PLUGIN_POINTNAME, null);
             if (loaded != null) {
                 properties.putAll(loaded);
             }
@@ -2152,7 +2157,7 @@ public class MainSettingsPanel extends AbstractSettingsPanel {
         SwingWorker<Void, Void> worker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() throws Exception {
-                PlatformUI.MIRTH_FRAME.mirthClient.setPluginProperties(PluginConstants.PLUGIN_POINTNAME, properties, false);
+                getMirthFrame().mirthClient.setPluginProperties(PluginConstants.PLUGIN_POINTNAME, properties, false);
                 return null;
             }
 
